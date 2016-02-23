@@ -1,0 +1,976 @@
+swagger: '2.0'
+info:
+  title: RVI HTTP API Spec
+  version: '0.0.1'
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+
+paths:
+
+  #
+  # Path Definitions
+  #
+
+  /vehicles:
+    get:
+      description: |
+        Returns a paged list of all vehicles connected to the application for
+        the current authorized user
+      parameters:
+        - name: limit
+          in: query
+          description: |
+            Number of vehicles to return `minimum: 1` `maximum: 50` `default:
+            10`
+          required: false
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 50
+        - name: offset
+          in: query
+          description: |
+            Index to start vehicle list at `minimum: 0` `default: 0`
+          required: false
+          type: integer
+          default: 0
+          minimum: 0
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: VehiclesPage
+            description: A paged list of vehicle IDs
+            required:
+              - vehicles
+              - paging
+            properties:
+              vehicles:
+                description: An array of vehicle IDs
+                type: array
+                items:
+                  description: A vehicle ID (UUID v4)
+                  type: string
+                  pattern: '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}'
+                  example: 36ab27d0-fd9d-4455-823a-ce30af709ffc
+              paging:
+                title: Page
+                description: Metadata about the current list of elements
+                required:
+                  - count
+                  - offset
+                properties:
+                  count:
+                    description: |
+                      The total number of elements for the entire query (not
+                      just the given page)
+                    type: integer
+                    example: 25
+                  offset:
+                    description: |
+                      The current start index of the returned element list
+                    type: integer
+                    example: 10
+
+  /vehicles/{id}:
+    parameters:
+       - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns a single vehicle object, containing identifying information
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Vehicle
+            description: |
+              A single vehicle object, containing identifying information
+            required:
+              - id
+              - make
+              - model
+              - year
+            properties:
+              id:
+                description: A vehicle ID (UUID v4)
+                type: string
+                pattern: '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}'
+                example: 36ab27d0-fd9d-4455-823a-ce30af709ffc
+              make:
+                description: The manufacturer of the vehicle
+                type: string
+                enum:
+                  - TESLA
+                  - FORD
+                  - BMW
+                  - LEXUS
+                  - VOLVO
+                  - CHEVROLET
+                  - CADILLAC
+                  - BUICK
+                  - GMC
+                  - OPEL
+                  - VAUXHALL
+                  - ONSTAR
+                  - FIAT
+                  - CHRYSLER
+                  - DODGE
+                  - JEEP
+                  - LANCIA
+                  - RAM
+                  - INFINITI
+                example: TESLA
+              model:
+                description: The model of the vehicle
+                type: string
+                example: Model S
+              year:
+                description: The model year
+                type: integer
+                example: 2014
+
+  /vehicles/{id}/accelerometer:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the current reading for the vehicle's accelerometer
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Accelerometer
+            description: An accelerometer reading
+            required:
+              - 'x'
+              - 'y'
+              - 'z'
+            properties:
+              'x':
+                description: |
+                  The acceleration on the X axis (in centimeters/second^2)
+                type: number
+                format: double
+                example: 12.2
+              'y':
+                description: |
+                  The acceleration on the Y axis (in centimeters/second^2)
+                type: number
+                format: double
+                example: 3.08
+              'z':
+                description: |
+                  The acceleration on the Z axis (in centimeters/second^2)
+                type: number
+                format: double
+                example: 5.83
+
+  /vehicles/{id}/airbags:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of the vehicle's airbags
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Airbags
+            description: The status of the vehicle's airbags
+            required:
+              - airbags
+            properties:
+              airbags:
+                description: An array of airbags
+                type: array
+                items:
+                  title: Airbag
+                  description: An airbag object
+                  required:
+                    - location
+                    - type
+                    - isActive
+                    - isDeployed
+                  type: object
+                  properties:
+                    location:
+                      description: Position of the airbag relative to vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_MIDDLE
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_MIDDLE
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_MIDDLE
+                        - CENTER_LEFT
+                        - REAR
+                        - EXTERNAL
+                      example: FRONT_LEFT
+                    type:
+                      description: Type of airbag module
+                      type: string
+                      enum:
+                        - FRONTAL
+                        - SHAPED
+                        - SIDE
+                        - SIDE_TORSO
+                        - CURTAIN
+                        - KNEE
+                        - SEAT
+                        - CENTER
+                        - SEATBELT
+                        - PEDESTRIAN
+                      example: FRONTAL
+                    isActive:
+                      description: |
+                        Indicates if the airbag is on/active (can be deployed)
+                      type: boolean
+                    isDeployed:
+                      description: Indicates if the airbag is deployed
+                      type: boolean
+
+  /vehicles/{id}/barometer:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the current reading of the vehicle's barometer
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Barometer
+            description: A barometer reading
+            required:
+              - pressure
+            properties:
+              pressure:
+                description: |
+                  The barometric pressure of the vehicle at its current
+                  altitude (in Kilopascals)
+                type: number
+                format: double
+                example: 97.71
+
+  /vehicles/{id}/climate:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the current state of the vehicle's climate control system
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Climate
+            description: The current state of the climate control system
+            required:
+              - temperature
+              - isOn
+            properties:
+              temperature:
+                description: |
+                  The currently set temperature of the climate system. Note:
+                  this is NOT the current temperature of the vehicle, but
+                  rather the target temperature to which the climate control
+                  system will heat/cool the car to (in Celcius)
+                type: number
+                format: double
+                example: 35.3
+              isOn:
+                description: |
+                  Indicates if the climate control system is currently running
+                type: boolean
+    post:
+      description: |
+        Turn the climate control system on and off in addition to setting its
+        temperature
+      parameters:
+        - name: body
+          in: body
+          description: |
+            Parameters to turn the climate control system on and off in
+            addition to setting its temperature
+          required: true
+          schema:
+            title: ClimateAction
+            required:
+              - action
+            properties:
+              action:
+                description: The action to take on the climate control system
+                type: string
+                enum:
+                  - START
+                  - STOP
+              temperature:
+                description: |
+                  The temperature to set (in Celcius). The default will be the
+                  last set temperature. This is unnecessary for the `STOP`
+                  action. Note: if the provided temperature is out of the
+                  bounds allowed by the climate control system, the actual
+                  temperature will be set to the minimum / maximum value
+                  allowed by the climate control system
+                type: number
+                format: double
+                example: 35.2
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/collision_sensor:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the current state of the vehicle's collision sensor
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: CollisionSensor
+            description: The current collision sensor state
+            required:
+              - isTriggered
+            properties:
+              isTriggered:
+                description: Indicates if the collision sensor was triggered
+                type: boolean
+
+  /vehicles/{id}/engine:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the current state of the vehicle's engine/accessory power
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Engine
+            description: The current state of the vehicle's engine/accessory power
+            required:
+              - state
+            properties:
+              state:
+                description: |
+                  Indicates the state of the vehicle's engine.
+
+                  OFF: the vehicle is off
+
+                  ACCESSORY_1: the vehicle has the first-level of accessory
+                  power turned on (the first turn in a standard vehicle or
+                  first press in a keyless vehicle)
+
+                  ACCESSORY_2: the vehicle has the second-level of accessory
+                  power turned on (the second turn in a stardard vehicle or
+                  second press in a keyless vehicle); note: the vehicle's
+                  engine is NOT started
+
+                  STARTED: the vehicle's engine is running
+                type: string
+                enum:
+                  - OFF
+                  - ACCESSORY_1
+                  - ACCESSORY_2
+                  - STARTED
+    post:
+      description: |
+        Start or stop the vehicle's engine. This also includes the vehicles
+        with electric motors. `START` allows the driver to start moving the
+        vehicle
+      parameters:
+        - name: action
+          in: body
+          description: |
+            The action to take on the engine. `START`: start the vehicle with
+            the ability to drive the vehicle. `STOP`: turn the vehicle off.
+            `ACCESSORY_1`: turn the vehicle's first level accessory power on
+            (available on ICE vehicles). `ACCESSORY_2`: turn the vehicle's
+            second level accessory power on (available on ICE vehicles)
+          required: true
+          schema:
+            type: string
+            enum:
+              - START
+              - STOP
+              - ACCESSORY_1
+              - ACCESSORY_2
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/engine/hood:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Indicates whether the hood is open or closed
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: EngineHood
+            description: Status of the engine hood
+            required:
+              - isOpen
+            properties:
+              isOpen:
+                description: Indicates if the engine hood is currently open
+                type: boolean
+    post:
+      description: |
+        Open or close the vehicle's engine hood. The engine hood may be located
+        in the front or rear depending on where the egnine is located
+      parameters:
+        - name: action
+          in: body
+          description: The action to take on the engine hood
+          required: true
+          schema:
+            type: string
+            enum:
+              - OPEN
+              - CLOSE
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/fuel:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the status of the fuel remaining in the vehicle's gas tank
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Fuel
+            description: Status of the fuel remaining in the vehicle's gas tank
+            required:
+              - range
+              - percentRemaining
+            properties:
+              range:
+                description: |
+                  The estimated remaining distance the car can travel (in
+                  Kilometers)
+                type: number
+                format: double
+                example: 40.5
+              percentRemaining:
+                description: The remaining level of fuel in the tank
+                type: number
+                format: double
+                example: 0.3
+
+  /vehicles/{id}/location:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the location of the vehicle in terms of coordinates
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Location
+            description: The current location of the vehicle
+            required:
+              - latitude
+              - longitude
+              - accuracy
+            properties:
+              latitude:
+                description: The degrees latitude
+                type: number
+                format: double
+                example: 37.4292
+              longitude:
+                description: The degrees longitude
+                type: number
+                format: double
+                example: 122.1381
+              accuracy:
+                description: The accuracy of the coordinates (in Meters)
+                type: number
+                format: double
+                example: 10.2
+
+  /vehicles/{id}/odometer:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the vehicle's current odometer total
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Odometer
+            description: The vehicle's current odometer total
+            required:
+              - distance
+            properties:
+              distance:
+                description: |
+                  The current odometer of the vehicle (in Kilometers)
+                type: number
+                format: double
+                example: 104.32
+
+  /vehicles/{id}/odometer/trips:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the vehicle's current trip odometers
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: OdometerTrips
+            description: The vehicle's current trip odometers
+            required:
+              - trips
+            properties:
+              trips:
+                description: An array of Trip objects
+                type: array
+                items:
+                  title: OdometerTrip
+                  description: A single trip odometer
+                  required:
+                    - label
+                    - distance
+                  properties:
+                    label:
+                      description: The label of the current trip odometer
+                      type: string
+                      example: a
+                    distance:
+                      description: |
+                        The distance traveled in this current trip (in
+                        Kilometers)
+                      type: number
+                      format: double
+                      example: 32.11
+
+  /vehicles/{id}/panic:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    post:
+      description: Starts or stops the vehicle's panic mode
+      parameters:
+        - name: action
+          in: body
+          description: The action to take on the vehicle's panic mode
+          required: true
+          schema:
+            type: string
+            enum:
+              - START
+              - STOP
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/ports/fuel:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    post:
+      description: Opens the lid of the fuel port
+      parameters:
+        - name: action
+          in: body
+          description: The action to take on the fuel port
+          required: true
+          schema:
+            type: string
+            enum:
+              - OPEN
+              - CLOSE
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/rain_sensor:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of the vehicle's rain sensor
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: RainSensor
+            description: The status of the vehicle's rain sensor
+            required:
+              - isRaining
+            properties:
+              isRaining:
+                description: |
+                  Indicates if the rain sensor is currently detecting rain
+                type: boolean
+
+  /vehicles/{id}/seats:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of the vehicle's seats
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Seats
+            description: The status of the vehicle's seats
+            required:
+              - seats
+            properties:
+              seats:
+                description: An array of Seat objects
+                type: array
+                items:
+                  title: Seat
+                  description: The status of a single seat
+                  required:
+                    - location
+                    - isOccupied
+                    - isBuckled
+                  properties:
+                    location:
+                      description: The position of the seat relative to vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_MIDDLE
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_MIDDLE
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_MIDDLE
+                        - CENTER_LEFT
+                    isOccupied:
+                      description: Indicates if the seat is currently occupied
+                      type: boolean
+                    isBuckled:
+                      description: |
+                        Indicates if the seatbelt is currently buckled
+                      type: boolean
+
+  /vehicles/{id}/security:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    post:
+      description: Locks or unlocks a vehicle
+      parameters:
+        - name: action
+          in: body
+          description: The security action to take on the vehicle
+          schema:
+            type: string
+            enum:
+              - LOCK
+              - UNLOCK
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/trunks/rear:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    post:
+      description: Opens or closes the vehicle's rear trunk
+      parameters:
+        - name: action
+          in: body
+          description: The action to take on the rear trunk
+          required: true
+          schema:
+            type: string
+            enum:
+              - OPEN
+              - CLOSE
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/themistors/exterior:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the current reading of the vehicle's exterior temperature
+        sensors
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: ExteriorTemperature
+            description: The vehicle's exterior temperature sensor reading
+            required:
+              - temperature
+            properties:
+              temperature:
+                description: Temperature (in Celcius)
+                type: number
+                format: double
+                example: 35.2
+
+  /vehicles/{id}/themistors/interior:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the current reading of the vehicle's interior temperature
+        sensors
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: InteriorTemperature
+            description: The vehicle's interior temperature sensor reading
+            required:
+              - temperature
+            properties:
+              temperature:
+                description: Temperature (in Celcius)
+                type: number
+                format: double
+                example: 35.2
+
+  /vehicles/{id}/tires:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of the vehicle's tires
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Tires
+            description: The status of the vehicle's tires
+            required:
+              - tires
+            properties:
+              tires:
+                description: An array of Tire objects
+                type: array
+                items:
+                  title: Tire
+                  description: The status of a single tire
+                  required:
+                    - location
+                    - pressure
+                  properties:
+                    location:
+                      description: |
+                        The position of the tire relative to the vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_LEFT
+                    pressure:
+                      description: |
+                        The current pressure of the tire (in Kilopascals)
+                      type: number
+                      format: double
+                      example: 219.3
+
+  /vehicles/{id}/transmission:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: |
+        Returns the type of transmission the vehicle has and its current state
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Transmission
+            description: |
+              The type of transmission the vehicle has and its current state
+            required:
+              - type
+              - state
+            properties:
+              type:
+                description: The type of engine
+                type: string
+                enum:
+                  - AUTOMATIC
+                  - MANUAL
+                  - ELECTRIC
+              state:
+                description: The current state of the vehicle
+                type: string
+                enum:
+                  - PARK
+                  - NEUTRAL
+                  - REVERSE
+                  - DRIVE
+                  - OTHER
+
+  /vehicles/{id}/vin:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the vehicle's manufacturer identifier
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: VIN
+            description: The vehicle's manufacturer identifier
+            required:
+              - vin
+            properties:
+              vin:
+                description: The manufacturer unique identifier
+                type: string
+                example: 1234A67Q90F2T4567
+
+  /vehicles/{id}/windows:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of vehicle windows
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: Windows
+            description: The status of the vehicle's windows
+            required:
+              - windows
+            properties:
+              windows:
+                description: An array of Window objects
+                type: array
+                items:
+                  title: Window
+                  description: The status of a single window
+                  required:
+                    - location
+                    - isLocked
+                    - percentOpen
+                  properties:
+                    location:
+                      description: |
+                        The position of the window relative to the vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_LEFT
+                    isLocked:
+                      description: Indicates if the individual window is locked
+                      type: boolean
+                    percentOpen:
+                      description: Percent the window is open (0-1)
+                      type: number
+                      format: double
+                      minimum: 0
+                      maximum: 1
+    post:
+      description: Controls the vehicle's windows
+      parameters:
+        - name: body
+          in: body
+          description: Parameters to control the vehicle's windows
+          required: true
+          schema:
+            title: WindowAction
+            required:
+              - action
+              - windows
+            properties:
+              action:
+                description: The action to take on the windows
+                type: string
+                enum:
+                  - OPEN
+                  - CLOSE
+                  - LOCK
+                  - UNLOCK
+              windows:
+                description: |
+                  An array of Window objects. Only the specified windows will be
+                  effected
+                type: array
+                minItems: 1
+                items:
+                  title: Window
+                  description: Action parameters for a single window
+                  required:
+                    - location
+                  properties:
+                    location:
+                      description: |
+                        The position of the window relative to the vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_LEFT
+                    percentOpen:
+                      description: |
+                        The percent to open the window (0-1). This can only be
+                        used with the `OPEN`. By default, the window will fully
+                        open when action is set to `OPEN`.
+                      type: number
+                      format: double
+                      default: 1
+                      minimum: 0
+                      maximum: 1
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+
+parameters:
+
+  #
+  # Parameter Definitions
+  #
+
+  idParam:
+    name: id
+    in: path
+    description: A vehicle ID (UUID v4)
+    required: true
+    type: string
+    pattern: '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}'
+
+
+responses:
+
+  #
+  # Response Definitions
+  #
+
+  ActionSuccessResponse:
+    description: Success
+    schema:
+      title: Success
+      description: Success
+      required:
+        - status
+      properties:
+        status:
+          description: This will always be set to success for HTTP 200
+          type: string
+          enum:
+            - success
