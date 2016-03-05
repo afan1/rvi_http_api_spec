@@ -2,8 +2,8 @@ swagger: '2.0'
 info:
   title: RVI HTTP API Spec
   version: '0.0.1'
-basePath: /
 schemes:
+  - http
   - https
 consumes:
   - application/json
@@ -106,25 +106,72 @@ paths:
                 description: The manufacturer of the vehicle
                 type: string
                 enum:
-                  - TESLA
-                  - FORD
+                  - ABARTH
+                  - ACURA
+                  - ALFA ROMEO
+                  - ASTON MARTIN
+                  - AUDI
                   - BMW
-                  - LEXUS
-                  - VOLVO
-                  - CHEVROLET
-                  - CADILLAC
+                  - BAJAJ
+                  - BENTLEY
+                  - BUGATTI
                   - BUICK
-                  - GMC
-                  - OPEL
-                  - VAUXHALL
-                  - ONSTAR
-                  - FIAT
+                  - CADILLAC
+                  - CHEVROLET
                   - CHRYSLER
+                  - CITROEN
                   - DODGE
-                  - JEEP
-                  - LANCIA
-                  - RAM
+                  - DUCATI
+                  - FERRARI
+                  - FIAT
+                  - FISKER
+                  - FORD
+                  - GMC
+                  - GEELY
+                  - HERO
+                  - HONDA
+                  - HYUNDAI
                   - INFINITI
+                  - ISUZU
+                  - JAGUAR
+                  - JEEP
+                  - KAWASAKI
+                  - KIA
+                  - LAMBORGHINI
+                  - LANCHESTER
+                  - LANCIA
+                  - LAND ROVER
+                  - LEXUS
+                  - LINCOLN
+                  - LOTUS
+                  - MAHINDRA
+                  - MASERATI
+                  - MAZDA
+                  - MCLAREN
+                  - MERCEDES-BENZ
+                  - MINI
+                  - MITSUBISHI
+                  - NISSAN
+                  - OPEL
+                  - PEUGEOT
+                  - PORSCHE
+                  - RAM
+                  - RENAULT
+                  - ROLLS ROYCE
+                  - SAAB
+                  - SCION
+                  - SMART
+                  - SUBARU
+                  - SUZUKI
+                  - TVS
+                  - TATA
+                  - TESLA
+                  - TOYOTA
+                  - VAUXHALL
+                  - VESPA
+                  - VOLKSWAGEN
+                  - VOLVO
+                  - YAMAHA
                 example: TESLA
               model:
                 description: The model of the vehicle
