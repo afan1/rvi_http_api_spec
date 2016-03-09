@@ -1,6 +1,6 @@
 {
   "name": "rvi-http-api-spec",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "RVI HTTP API schema object",
   "repository": {
     "type": "git",

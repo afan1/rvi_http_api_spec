@@ -108,8 +108,8 @@ paths:
                 enum:
                   - ABARTH
                   - ACURA
-                  - ALFA ROMEO
-                  - ASTON MARTIN
+                  - ALFA_ROMEO
+                  - ASTON_MARTIN
                   - AUDI
                   - BMW
                   - BAJAJ
@@ -148,7 +148,7 @@ paths:
                   - MASERATI
                   - MAZDA
                   - MCLAREN
-                  - MERCEDES-BENZ
+                  - MERCEDES_BENZ
                   - MINI
                   - MITSUBISHI
                   - NISSAN
@@ -157,7 +157,7 @@ paths:
                   - PORSCHE
                   - RAM
                   - RENAULT
-                  - ROLLS ROYCE
+                  - ROLLS_ROYCE
                   - SAAB
                   - SCION
                   - SMART
@@ -905,7 +905,6 @@ paths:
                   description: The status of a single window
                   required:
                     - location
-                    - isLocked
                     - percentOpen
                   properties:
                     location:
@@ -919,9 +918,6 @@ paths:
                         - BACK_LEFT
                         - CENTER_RIGHT
                         - CENTER_LEFT
-                    isLocked:
-                      description: Indicates if the individual window is locked
-                      type: boolean
                     percentOpen:
                       description: Percent the window is open (0-1)
                       type: number
@@ -937,6 +933,7 @@ paths:
           required: true
           schema:
             title: WindowAction
+            type: object
             required:
               - action
               - windows
@@ -947,17 +944,16 @@ paths:
                 enum:
                   - OPEN
                   - CLOSE
-                  - LOCK
-                  - UNLOCK
               windows:
                 description: |
                   An array of Window objects. Only the specified windows will be
-                  effected
+                  affected
                 type: array
                 minItems: 1
                 items:
                   title: Window
                   description: Action parameters for a single window
+                  type: object
                   required:
                     - location
                   properties:
@@ -982,6 +978,92 @@ paths:
                       default: 1
                       minimum: 0
                       maximum: 1
+      responses:
+        '200':
+          $ref: '#/responses/ActionSuccessResponse'
+
+  /vehicles/{id}/windows/locks:
+    parameters:
+      - $ref: '#/parameters/idParam'
+    get:
+      description: Returns the status of vehicle window locks
+      responses:
+        '200':
+          description: Success
+          schema:
+            title: WindowLocks
+            description: The status of the vehicle's window locks
+            required:
+              - windows
+            properties:
+              windows:
+                description: An array of WindowLock objects
+                type: array
+                items:
+                  title: WindowLock
+                  description: The status of a single window lock
+                  required:
+                    - location
+                    - isLocked
+                  properties:
+                    location:
+                      description: |
+                        The position of the window relative to the vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_LEFT
+                    isLocked:
+                      description: Indicates if the individual window is locked
+                      type: boolean
+    post:
+      description: Controls the vehicle's window locks
+      parameters:
+        - name: body
+          in: body
+          description: Parameters to control the vehicle's window locks
+          required: true
+          schema:
+            title: WindowLockAction
+            type: object
+            required:
+              - action
+              - windows
+            properties:
+              action:
+                description: The action to take on the window locks
+                type: string
+                enum:
+                  - LOCK
+                  - UNLOCK
+              windows:
+                description: |
+                  An array of WindowLock objects. Only the specified window
+                  locks will be affected
+                type: array
+                minItems: 1
+                items:
+                  title: WindowLock
+                  description: Action parameters for a single window lock
+                  type: object
+                  required:
+                    - location
+                  properties:
+                    location:
+                      description: |
+                        The position of the window relative to the vehicle
+                      type: string
+                      enum:
+                        - FRONT_RIGHT
+                        - FRONT_LEFT
+                        - BACK_RIGHT
+                        - BACK_LEFT
+                        - CENTER_RIGHT
+                        - CENTER_LEFT
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
