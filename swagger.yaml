@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: RVI HTTP API Spec
-  version: '0.0.1'
+  version: '0.0.4'
 schemes:
   - http
   - https
@@ -341,10 +341,10 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           description: |
             Parameters to turn the climate control system on and off in
             addition to setting its temperature
-          required: true
           schema:
             title: ClimateAction
             required:
@@ -432,22 +432,26 @@ paths:
         with electric motors. `START` allows the driver to start moving the
         vehicle
       parameters:
-        - name: action
+        - name: body
           in: body
+          required: true
           description: |
             The action to take on the engine. `START`: start the vehicle with
             the ability to drive the vehicle. `STOP`: turn the vehicle off.
             `ACCESSORY_1`: turn the vehicle's first level accessory power on
             (available on ICE vehicles). `ACCESSORY_2`: turn the vehicle's
             second level accessory power on (available on ICE vehicles)
-          required: true
           schema:
-            type: string
-            enum:
-              - START
-              - STOP
-              - ACCESSORY_1
-              - ACCESSORY_2
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - START
+                  - STOP
+                  - ACCESSORY_1
+                  - ACCESSORY_2
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
@@ -474,15 +478,19 @@ paths:
         Open or close the vehicle's engine hood. The engine hood may be located
         in the front or rear depending on where the egnine is located
       parameters:
-        - name: action
+        - name: body
           in: body
-          description: The action to take on the engine hood
           required: true
+          description: The action to take on the engine hood
           schema:
-            type: string
-            enum:
-              - OPEN
-              - CLOSE
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - OPEN
+                  - CLOSE
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
@@ -612,15 +620,19 @@ paths:
     post:
       description: Starts or stops the vehicle's panic mode
       parameters:
-        - name: action
+        - name: body
           in: body
-          description: The action to take on the vehicle's panic mode
           required: true
+          description: The action to take on the vehicle's panic mode
           schema:
-            type: string
-            enum:
-              - START
-              - STOP
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - START
+                  - STOP
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
@@ -631,15 +643,19 @@ paths:
     post:
       description: Opens the lid of the fuel port
       parameters:
-        - name: action
+        - name: body
           in: body
-          description: The action to take on the fuel port
           required: true
+          description: The action to take on the fuel port
           schema:
-            type: string
-            enum:
-              - OPEN
-              - CLOSE
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - OPEN
+                  - CLOSE
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
@@ -715,14 +731,19 @@ paths:
     post:
       description: Locks or unlocks a vehicle
       parameters:
-        - name: action
+        - name: body
           in: body
+          required: true
           description: The security action to take on the vehicle
           schema:
-            type: string
-            enum:
-              - LOCK
-              - UNLOCK
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - LOCK
+                  - UNLOCK
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
@@ -733,15 +754,19 @@ paths:
     post:
       description: Opens or closes the vehicle's rear trunk
       parameters:
-        - name: action
+        - name: body
           in: body
-          description: The action to take on the rear trunk
           required: true
+          description: The action to take on the rear trunk
           schema:
-            type: string
-            enum:
-              - OPEN
-              - CLOSE
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum:
+                  - OPEN
+                  - CLOSE
       responses:
         '200':
           $ref: '#/responses/ActionSuccessResponse'
