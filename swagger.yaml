@@ -140,7 +140,7 @@ paths:
                   - LAMBORGHINI
                   - LANCHESTER
                   - LANCIA
-                  - LAND ROVER
+                  - LAND_ROVER
                   - LEXUS
                   - LINCOLN
                   - LOTUS
@@ -987,6 +987,7 @@ paths:
                         The position of the window relative to the vehicle
                       type: string
                       enum:
+                        - ALL
                         - FRONT_RIGHT
                         - FRONT_LEFT
                         - BACK_RIGHT
@@ -1083,6 +1084,7 @@ paths:
                         The position of the window relative to the vehicle
                       type: string
                       enum:
+                        - ALL
                         - FRONT_RIGHT
                         - FRONT_LEFT
                         - BACK_RIGHT
