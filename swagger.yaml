@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: RVI HTTP API Spec
-  version: '0.0.4'
+  version: '0.0.5'
 schemes:
   - http
   - https
